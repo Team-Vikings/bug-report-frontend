@@ -1,0 +1,8 @@
+bug-timeline:not(.oj-complete){
+  visibility: hidden;
+}
+
+bug-timeline{
+	min-height: 50px;
+	width: 50px;
+}

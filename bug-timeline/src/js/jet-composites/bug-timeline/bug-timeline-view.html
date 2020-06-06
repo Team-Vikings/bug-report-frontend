@@ -1,0 +1,34 @@
+<!--
+  Copyright (c) 2015, 2020, Oracle and/or its affiliates.
+  The Universal Permissive License (UPL), Version 1.0
+-->
+<div class="oj-hybrid-padding">
+  <h1>Bug Timeline <oj-bind-text value="[[bugNo]]"></oj-bind-text> </h1>
+  <div>
+    <!-- <oj-label for="bugNo">Enter Bug No</oj-label>
+    <oj-input-text required value="{{bugNo}}" id="bugNo" 
+      converter='{"type":"number", "options":{"pattern": "########"}}' validators="[[validators]]"></oj-input-text> -->
+
+    <oj-table :id='[[tabId]]' data='[[dataprovider]]' columns='[{"headerText": "Update Date", 
+                     "field": "UpdDate",
+                     "resizable": "enabled"},
+                    {"headerText": "Product Id", 
+                     "field": "ProductId",
+                     "headerClassName": "oj-sm-only-hide",
+                     "className": "oj-sm-only-hide",
+                     "resizable": "enabled"},
+                     {"headerText": "Status", 
+                     "field": "Status",
+                     "resizable": "enabled"},
+                     {"headerText": "Status Changed", 
+                     "field": "StatusChanged",
+                     "resizable": "enabled"},
+                     {"headerText": "Product Changed", 
+                     "field": "ProdChanged",
+                     "resizable": "enabled"},
+                     {"headerText": "Status Type", 
+                     "field": "StatusType",
+                     "resizable": "enabled"}
+                     ]'>
+  </div>
+</div>

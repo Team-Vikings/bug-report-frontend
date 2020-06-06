@@ -1,0 +1,21 @@
+{
+  "name": "bug-timeline",
+  "version": "1.0.0",
+  "jetVersion": "^8.1.0",
+  "displayName": "A component for showing bug timeline",
+  "description": "Shows a colourful visualization of a bug's journey since creation to terminal closure (or current time)",
+  "properties": {
+    "bugNo": {
+      "type": "number"
+    }
+  },
+  "methods": {
+
+  }, 
+  "events": {
+
+  }, 
+  "slots": {
+
+  }
+}
