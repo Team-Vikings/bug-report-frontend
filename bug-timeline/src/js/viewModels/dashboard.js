@@ -7,7 +7,7 @@
 /*
  * Your dashboard ViewModel code goes here
  */
-define(['knockout', 'ojs/ojbootstrap', 'ojs/ojarraydataprovider', 'ojs/ojknockout', 'ojs/ojtable', 'ojs/ojinputtext', 'ojs/ojvalidation-number'],
+define(['knockout', 'ojs/ojbootstrap', 'ojs/ojarraydataprovider', 'ojs/ojknockout', 'ojs/ojtable','bug-timeline/loader'],
   function (ko, Bootstrap, ArrayDataProvider) {
     function DashboardViewModel() {
       var self = this;
@@ -49,7 +49,7 @@ define(['knockout', 'ojs/ojbootstrap', 'ojs/ojarraydataprovider', 'ojs/ojknockou
         then(function (fetchData) {
           $.each(fetchData, function () {
 
-            debugger;
+            //debugger;
             self.data.push({
               UpdDate: this.UPD_DATE,
               ProductId: this.NEW_PRODUCT_ID,
@@ -60,7 +60,7 @@ define(['knockout', 'ojs/ojbootstrap', 'ojs/ojarraydataprovider', 'ojs/ojknockou
             });
           });
         });
-      debugger;
+      //debugger;
       self.dataprovider = new ArrayDataProvider(self.data);
       // Below are a set of the ViewModel methods invoked by the oj-module component.
       // Please reference the oj-module jsDoc for additional information.

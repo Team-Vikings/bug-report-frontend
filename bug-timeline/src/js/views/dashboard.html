@@ -2,14 +2,14 @@
  Copyright (c) 2014, 2020, Oracle and/or its affiliates.
  The Universal Permissive License (UPL), Version 1.0
  -->
-<div class="oj-hybrid-padding">
+ <div class="oj-hybrid-padding">
   <h1>Bug Timeline <oj-bind-text value="[[bugNo]]"></oj-bind-text> </h1>
   <div>
     <!-- <oj-label for="bugNo">Enter Bug No</oj-label>
     <oj-input-text required value="{{bugNo}}" id="bugNo" 
       converter='{"type":"number", "options":{"pattern": "########"}}' validators="[[validators]]"></oj-input-text> -->
 
-    <oj-table id='tabid' data='[[dataprovider]]' columns='[{"headerText": "Update Date", 
+    <!-- <oj-table id='tabid' data='[[dataprovider]]' columns='[{"headerText": "Update Date", 
                      "field": "UpdDate",
                      "resizable": "enabled"},
                     {"headerText": "Product Id", 
@@ -29,6 +29,7 @@
                      {"headerText": "Status Type", 
                      "field": "StatusType",
                      "resizable": "enabled"}
-                     ]'>
+                     ]'> </oj-table> -->
+                     <bug-timeline bug-no=31199455></bug-timeline>
   </div>
 </div>
