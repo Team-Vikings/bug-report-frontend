@@ -8,7 +8,38 @@ define(
   function (ko, componentStrings, Context, ArrayDataProvider) {
 
     function ExampleComponentModel(context) {
+      var currentModuleProductId = 2422;
       var self = this;
+      var red = 'R';
+      var orange = 'O';
+      var yellow = 'Y';
+      var green = 'G';
+      var grey = 'Gr';
+      var brown = 'B';
+      var firstSemiTerminal = true;
+
+      function getColour(StatusType, ProductId) {
+        if (StatusType == 'ST') {
+          if (firstSemiTerminal) {
+            firstSemiTerminal = false;
+            return ProductId == currentModuleProductId ? yellow : grey;
+          }
+          else {
+            //after 7 days, ST is considered as terminal closure
+            return ProductId == currentModuleProductId ? green : brown;
+          }
+        }
+        firstSemiTerminal = true;
+        if (StatusType == 'O') {
+          return ProductId == currentModuleProductId ? red : grey;
+        }
+        if (StatusType == 'NT') {
+          return ProductId == currentModuleProductId ? orange : grey;
+        }
+        if (StatusType == 'T') {
+          return ProductId == currentModuleProductId ? green : brown;
+        }
+      }
 
       //At the start of your viewModel constructor
       var busyContext = Context.getContext(context.element).getBusyContext();
@@ -55,14 +86,14 @@ define(
       self.dataprovider = ko.observable();
       self.tabId = 'tabid';
       if (context.properties.bugNo) {
-        debugger;
         self.bugNo(context.properties.bugNo);
         self.restApiURL = 'http://127.0.0.1:3000/api/BugClosedByUser/' + self.bugNo();
         self.data = ko.observableArray();
+        var tempArray = [];
         $.getJSON(self.restApiURL).
           then(function (fetchData) {
             $.each(fetchData, function () {
-              self.data.push({
+              tempArray.push({
                 UpdDate: this.UPD_DATE,
                 ProductId: this.NEW_PRODUCT_ID,
                 Status: this.NEW_STATUS,
@@ -71,6 +102,94 @@ define(
                 StatusType: statusMap.get(this.NEW_STATUS)
               });
             });
+            //debugger;
+            for (var i = 0; i < tempArray.length - 1; i++) {
+              var curVal = tempArray[i];
+              var curUpdateDate = new Date(curVal.UpdDate);
+              var nextUpdDate = new Date(tempArray[i + 1].UpdDate);
+              var daysDiff = (nextUpdDate.getTime() - curUpdateDate.getTime()) / (1000 * 3600 * 24);
+              //split the record if status is in Semi terminal and diff of update dates is more than 7 
+              //to be used by colouring module
+              if (curVal.StatusType == 'ST' && Math.round(daysDiff) > 7) {
+                var nextWeekDate = new Date(curVal.UpdDate);
+                nextWeekDate.setDate(nextWeekDate.getDate() + 7); //add 7 days
+                self.data.push({
+                  UpdDate: curUpdateDate,
+                  ProductId: curVal.ProductId,
+                  Status: curVal.Status,
+                  StatusChanged: curVal.StatusChanged,
+                  ProdChanged: curVal.ProdChanged,
+                  StatusType: curVal.StatusType,
+                  NextUpdDate: nextWeekDate,
+                  Colour: getColour(curVal.StatusType, curVal.ProductId)
+                });
+                self.data.push({
+                  UpdDate: nextWeekDate,
+                  ProductId: curVal.ProductId,
+                  Status: curVal.Status,
+                  StatusChanged: curVal.StatusChanged,
+                  ProdChanged: curVal.ProdChanged,
+                  StatusType: curVal.StatusType,
+                  NextUpdDate: nextUpdDate,
+                  Colour: getColour(curVal.StatusType, curVal.ProductId)
+                });
+              }
+              else {
+                self.data.push({
+                  UpdDate: curUpdateDate,
+                  ProductId: curVal.ProductId,
+                  Status: curVal.Status,
+                  StatusChanged: curVal.StatusChanged,
+                  ProdChanged: curVal.ProdChanged,
+                  StatusType: curVal.StatusType,
+                  NextUpdDate: nextUpdDate,
+                  Colour: getColour(curVal.StatusType, curVal.ProductId)
+                });
+
+              }
+            }
+            var curVal = tempArray[i];
+            var sysDate = new Date();
+            var finalDate = new Date(curVal.UpdDate);
+            finalDate.setDate(finalDate.getDate() + 7); //add 7 days
+            //if last row is ST, inserts extra row to show terminal closure
+            if (curVal.StatusType == 'ST' && finalDate < sysDate) {
+
+              var finalDateST = new Date(curVal.UpdDate);
+              finalDateST.setDate(finalDateST.getDate() + 14); //add 14 days
+              self.data.push({
+                UpdDate: new Date(curVal.UpdDate),
+                ProductId: curVal.ProductId,
+                Status: curVal.Status,
+                StatusChanged: curVal.StatusChanged,
+                ProdChanged: curVal.ProdChanged,
+                StatusType: curVal.StatusType,
+                NextUpdDate: finalDate,
+                Colour: getColour(curVal.StatusType, curVal.ProductId)
+              });
+              self.data.push({
+                UpdDate: finalDate,
+                ProductId: curVal.ProductId,
+                Status: curVal.Status,
+                StatusChanged: curVal.StatusChanged,
+                ProdChanged: curVal.ProdChanged,
+                StatusType: curVal.StatusType,
+                NextUpdDate: finalDateST < sysDate ? finalDateST : sysDate,
+                Colour: getColour(curVal.StatusType, curVal.ProductId)
+              });
+            }
+            else {
+              self.data.push({
+                UpdDate: new Date(curVal.UpdDate),
+                ProductId: curVal.ProductId,
+                Status: curVal.Status,
+                StatusChanged: curVal.StatusChanged,
+                ProdChanged: curVal.ProdChanged,
+                StatusType: curVal.StatusType,
+                NextUpdDate: finalDate < sysDate ? finalDate : sysDate,
+                Colour: getColour(curVal.StatusType, curVal.ProductId)
+              });
+            }
           });
         self.dataprovider = new ArrayDataProvider(self.data);
 

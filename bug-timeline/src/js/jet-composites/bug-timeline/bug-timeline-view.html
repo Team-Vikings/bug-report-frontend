@@ -3,7 +3,7 @@
   The Universal Permissive License (UPL), Version 1.0
 -->
 <div class="oj-hybrid-padding">
-  <h1>Bug Timeline <oj-bind-text value="[[bugNo]]"></oj-bind-text> </h1>
+  <h1>Bug <oj-bind-text value="[[bugNo]]"></oj-bind-text> Timeline</h1>
   <div>
     <!-- <oj-label for="bugNo">Enter Bug No</oj-label>
     <oj-input-text required value="{{bugNo}}" id="bugNo" 
@@ -28,6 +28,12 @@
                      "resizable": "enabled"},
                      {"headerText": "Status Type", 
                      "field": "StatusType",
+                     "resizable": "enabled"},
+                     {"headerText": "Next Update Date", 
+                     "field": "NextUpdDate",
+                     "resizable": "enabled"},
+                     {"headerText": "Colour", 
+                     "field": "Colour",
                      "resizable": "enabled"}
                      ]'>
   </div>
