@@ -4,12 +4,16 @@
 */
 'use strict';
 define(
-  ['knockout', 'ojL10n!./resources/nls/bug-timeline-strings', 'ojs/ojcontext', 'ojs/ojarraydataprovider', 'ojs/ojknockout', 'ojs/ojknockout', 'ojs/ojtable'],
-  function (ko, componentStrings, Context, ArrayDataProvider) {
+  ['knockout', 'ojL10n!./resources/nls/bug-timeline-strings', 'ojs/ojcontext', 'ojs/ojarraydataprovider', 
+  'ojs/ojconverter-datetime',
+  'ojs/ojknockout', 'ojs/ojtable','ojs/ojgantt'],
+  function (ko, componentStrings, Context, ArrayDataProvider,DateTimeConverter) {
 
     function ExampleComponentModel(context) {
       var currentModuleProductId = 2422;
       var self = this;
+      const sysDate = new Date();
+      self.dateConverter = new DateTimeConverter.IntlDateTimeConverter({"formatType": "date", "dateFormat": "long"});
       var red = '#ff3333';
       var orange = '#ffb833';
       var yellow = '#ffff00';
@@ -82,10 +86,23 @@ define(
       statusMap.set(93, 'T');
       statusMap.set(96, 'T');
       self.bugNo = ko.observable();
-      // var deptArray = [{Id:1,UpdDate:'2020-04-19T23:53:03.000Z',ProductId:2421,Status:11,StatusChanged:'N',ProdChanged:'N',StatusType:'Non-Terminal'}];
-      // self.dataprovider = new ArrayDataProvider(deptArray, { keyAttributes: 'Id' })
+      // self.testminUpdateDate = new Date("Apr 1, 2020").toISOString();
+      // self.testmaxUpdateDate = new Date("Dec 31, 2020").toISOString();
+
+       var deptArray = [{
+         UpdDate:'2020-04-19T23:53:03.000Z',ProductId:2421,Status:11,StatusChanged:'N',ProdChanged:'N',StatusType:'NT',
+         NextUpdDate:'2020-04-21T08:51:51.000Z',Colour:'#ff3333'}];
+       self.testData = new ArrayDataProvider(deptArray)
       self.dataprovider = ko.observable();
       self.tabId = 'tabid';
+      self.ganttId= 'ganttid';
+      var minTempUpdateDate = new Date();
+      minTempUpdateDate.setDate(minTempUpdateDate.getDate() - 100);
+      self.minUpdateDate = ko.observable(minTempUpdateDate.toISOString());
+      var maxTempUpdateDate = new Date();
+      maxTempUpdateDate.setDate(maxTempUpdateDate.getDate() + 100);
+      self.maxUpdateDate = ko.observable(maxTempUpdateDate.toISOString());
+      debugger;
       if (context.properties.bugNo) {
         self.bugNo(context.properties.bugNo);
         self.restApiURL = 'http://127.0.0.1:3000/api/BugClosedByUser/' + self.bugNo();
@@ -103,7 +120,7 @@ define(
                   productFlag = "Bug transferred to other module";
                   break;
                 case "ETR":
-                  productFlag = "Other module transferred back the bug";
+                  productFlag = "Other module transferred bug back";
                   break;
                 default:
                   productFlag = null;
@@ -117,7 +134,10 @@ define(
                 StatusType: statusMap.get(this.NEW_STATUS)
               });
             });
-            //debugger;
+            self.minUpdateDate(new Date ( tempArray[0].UpdDate).toISOString());
+            var endDate = new Date (tempArray[tempArray.length - 1].UpdDate);
+            endDate.setDate(endDate.getDate() + 7); //add 7 days
+            self.maxUpdateDate((endDate < sysDate ? endDate : sysDate).toISOString());
             for (var i = 0; i < tempArray.length - 1; i++) {
               var curVal = tempArray[i];
               var curUpdateDate = new Date(curVal.UpdDate);
@@ -129,42 +149,41 @@ define(
                 var nextWeekDate = new Date(curVal.UpdDate);
                 nextWeekDate.setDate(nextWeekDate.getDate() + 7); //add 7 days
                 self.data.push({
-                  UpdDate: curUpdateDate,
+                  UpdDate: curUpdateDate.toISOString(),
                   ProductId: curVal.ProductId,
                   Status: curVal.Status,
                   StatusChanged: curVal.StatusChanged,
                   ProdChanged: curVal.ProdChanged,
                   StatusType: curVal.StatusType,
-                  NextUpdDate: nextWeekDate,
+                  NextUpdDate: nextWeekDate.toISOString(),
                   Colour: getColour(curVal.StatusType, curVal.ProductId)
                 });
                 self.data.push({
-                  UpdDate: nextWeekDate,
+                  UpdDate: nextWeekDate.toISOString,
                   ProductId: curVal.ProductId,
                   Status: curVal.Status,
                   StatusChanged: curVal.StatusChanged,
                   ProdChanged: curVal.ProdChanged,
                   StatusType: curVal.StatusType,
-                  NextUpdDate: nextUpdDate,
+                  NextUpdDate: nextUpdDate.toISOString(),
                   Colour: getColour(curVal.StatusType, curVal.ProductId)
                 });
               }
               else {
                 self.data.push({
-                  UpdDate: curUpdateDate,
+                  UpdDate: curUpdateDate.toISOString(),
                   ProductId: curVal.ProductId,
                   Status: curVal.Status,
                   StatusChanged: curVal.StatusChanged,
                   ProdChanged: curVal.ProdChanged,
                   StatusType: curVal.StatusType,
-                  NextUpdDate: nextUpdDate,
+                  NextUpdDate: nextUpdDate.toISOString(),
                   Colour: getColour(curVal.StatusType, curVal.ProductId)
                 });
 
               }
             }
             var curVal = tempArray[i];
-            var sysDate = new Date();
             var finalDate = new Date(curVal.UpdDate);
             finalDate.setDate(finalDate.getDate() + 7); //add 7 days
             //if last row is ST, inserts extra row to show terminal closure
@@ -173,41 +192,40 @@ define(
               var finalDateST = new Date(curVal.UpdDate);
               finalDateST.setDate(finalDateST.getDate() + 14); //add 14 days
               self.data.push({
-                UpdDate: new Date(curVal.UpdDate),
+                UpdDate: new Date(curVal.UpdDate).toISOString(),
                 ProductId: curVal.ProductId,
                 Status: curVal.Status,
                 StatusChanged: curVal.StatusChanged,
                 ProdChanged: curVal.ProdChanged,
                 StatusType: curVal.StatusType,
-                NextUpdDate: finalDate,
+                NextUpdDate: finalDate.toISOString(),
                 Colour: getColour(curVal.StatusType, curVal.ProductId)
               });
               self.data.push({
-                UpdDate: finalDate,
+                UpdDate: finalDate.toISOString(),
                 ProductId: curVal.ProductId,
                 Status: curVal.Status,
                 StatusChanged: curVal.StatusChanged,
                 ProdChanged: curVal.ProdChanged,
                 StatusType: curVal.StatusType,
-                NextUpdDate: finalDateST < sysDate ? finalDateST : sysDate,
+                NextUpdDate: (finalDateST < sysDate ? finalDateST : sysDate).toISOString(),
                 Colour: getColour(curVal.StatusType, curVal.ProductId)
               });
             }
             else {
               self.data.push({
-                UpdDate: new Date(curVal.UpdDate),
+                UpdDate: new Date(curVal.UpdDate).toISOString(),
                 ProductId: curVal.ProductId,
                 Status: curVal.Status,
                 StatusChanged: curVal.StatusChanged,
                 ProdChanged: curVal.ProdChanged,
                 StatusType: curVal.StatusType,
-                NextUpdDate: finalDate < sysDate ? finalDate : sysDate,
+                NextUpdDate: (finalDate < sysDate ? finalDate : sysDate).toISOString(),
                 Colour: getColour(curVal.StatusType, curVal.ProductId)
               });
             }
           });
         self.dataprovider = new ArrayDataProvider(self.data);
-
       }
 
       // Example for parsing context properties
