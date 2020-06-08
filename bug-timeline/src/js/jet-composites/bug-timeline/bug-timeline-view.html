@@ -34,7 +34,16 @@
                      "resizable": "enabled"},
                      {"headerText": "Colour", 
                      "field": "Colour",
-                     "resizable": "enabled"}
+                     "resizable": "enabled",
+                     "template": "colourCellTemplate"}
                      ]'>
+      <template slot="colourCellTemplate" data-oj-as="cell">
+        <input type="text" :value = "[[cell.data]]" />
+          <svg width="20" height="20">
+            <rect width="20" height="20" :style.fill="[[cell.data]]"  style="stroke-width:3;stroke:rgb(0,0,0)" />
+            </svg>
+      </template>
+    </oj-table>
+
   </div>
 </div>

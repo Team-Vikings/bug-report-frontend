@@ -10,12 +10,12 @@ define(
     function ExampleComponentModel(context) {
       var currentModuleProductId = 2422;
       var self = this;
-      var red = 'R';
-      var orange = 'O';
-      var yellow = 'Y';
-      var green = 'G';
-      var grey = 'Gr';
-      var brown = 'B';
+      var red = '#ff3333';
+      var orange = '#ffb833';
+      var yellow = '#ffff00';
+      var green =  '#00b300';//'#33ff33';
+      var grey = '#999999';
+      var brown = '#cb3434';
       var firstSemiTerminal = true;
 
       function getColour(StatusType, ProductId) {
@@ -73,6 +73,7 @@ define(
       statusMap.set(71, 'ST');
       statusMap.set(72, 'ST');
       statusMap.set(78, 'ST');
+      statusMap.set(80, 'T');
       statusMap.set(81, 'ST');
       statusMap.set(84, 'T');
       statusMap.set(90, 'T');
@@ -93,12 +94,26 @@ define(
         $.getJSON(self.restApiURL).
           then(function (fetchData) {
             $.each(fetchData, function () {
+              var productFlag;
+              switch(this.PROD_CHANGED){
+                case "ETI":
+                  productFlag = "Other module transferred bug";
+                  break;
+                case "ETO":
+                  productFlag = "Bug transferred to other module";
+                  break;
+                case "ETR":
+                  productFlag = "Other module transferred back the bug";
+                  break;
+                default:
+                  productFlag = null;
+              }
               tempArray.push({
                 UpdDate: this.UPD_DATE,
                 ProductId: this.NEW_PRODUCT_ID,
                 Status: this.NEW_STATUS,
                 StatusChanged: this.STATUS_CHANGED,
-                ProdChanged: this.PROD_CHANGED,
+                ProdChanged: productFlag,
                 StatusType: statusMap.get(this.NEW_STATUS)
               });
             });
