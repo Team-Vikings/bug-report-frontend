@@ -13,6 +13,7 @@ define(
       var currentModuleProductId = 2422;
       var self = this;
       const sysDate = new Date();
+      const convertUnit =  1000 * 3600 * 24;
       self.dateConverter = new DateTimeConverter.IntlDateTimeConverter({ "formatType": "date", "dateFormat": "long" });
       var red = '#ff3333';
       var orange = '#ffb833';
@@ -150,7 +151,7 @@ define(
               var curVal = tempArray[i];
               var curUpdateDate = new Date(curVal.UpdDate);
               var nextUpdDate = new Date(tempArray[i + 1].UpdDate);
-              var daysDiff = (nextUpdDate.getTime() - curUpdateDate.getTime()) / (1000 * 3600 * 24);
+              var daysDiff = (nextUpdDate.getTime() - curUpdateDate.getTime()) / convertUnit;
               //split the record if status is in Semi terminal and diff of update dates is more than 7 
               //to be used by colouring module
               if (curVal.StatusType == 'ST' && Math.round(daysDiff) > 7) {
@@ -164,16 +165,18 @@ define(
                   ProdChanged: curVal.ProdChanged,
                   StatusType: curVal.StatusType,
                   NextUpdDate: nextWeekDate.toISOString(),
+                  Duration: (nextWeekDate.getTime() - curUpdateDate.getTime())/ convertUnit,
                   Colour: getColour(curVal.StatusType, curVal.ProductId)
                 });
                 self.data.push({
-                  UpdDate: nextWeekDate.toISOString,
+                  UpdDate: nextWeekDate.toISOString(),
                   ProductId: curVal.ProductId,
                   Status: curVal.Status,
                   StatusChanged: curVal.StatusChanged,
                   ProdChanged: curVal.ProdChanged,
                   StatusType: curVal.StatusType,
                   NextUpdDate: nextUpdDate.toISOString(),
+                  Duration: (nextUpdDate.getTime() - nextWeekDate.getTime())/ convertUnit,
                   Colour: getColour(curVal.StatusType, curVal.ProductId)
                 });
               }
@@ -186,6 +189,7 @@ define(
                   ProdChanged: curVal.ProdChanged,
                   StatusType: curVal.StatusType,
                   NextUpdDate: nextUpdDate.toISOString(),
+                  Duration: (nextUpdDate.getTime() - curUpdateDate.getTime())/ convertUnit,
                   Colour: getColour(curVal.StatusType, curVal.ProductId)
                 });
 
@@ -207,6 +211,7 @@ define(
                 ProdChanged: curVal.ProdChanged,
                 StatusType: curVal.StatusType,
                 NextUpdDate: finalDate.toISOString(),
+                Duration: (finalDate.getTime() - new Date(curVal.UpdDate).getTime())/ convertUnit,
                 Colour: getColour(curVal.StatusType, curVal.ProductId)
               });
               self.data.push({
@@ -217,6 +222,7 @@ define(
                 ProdChanged: curVal.ProdChanged,
                 StatusType: curVal.StatusType,
                 NextUpdDate: (finalDateST < sysDate ? finalDateST : sysDate).toISOString(),
+                Duration: ((finalDateST < sysDate ? finalDateST : sysDate).getTime() - finalDate.getTime())/ convertUnit,
                 Colour: getColour(curVal.StatusType, curVal.ProductId)
               });
             }
@@ -229,6 +235,7 @@ define(
                 ProdChanged: curVal.ProdChanged,
                 StatusType: curVal.StatusType,
                 NextUpdDate: (finalDate < sysDate ? finalDate : sysDate).toISOString(),
+                Duration: ((finalDate < sysDate ? finalDate : sysDate).getTime() - new Date(curVal.UpdDate).getTime())/ convertUnit,
                 Colour: getColour(curVal.StatusType, curVal.ProductId)
               });
             }
