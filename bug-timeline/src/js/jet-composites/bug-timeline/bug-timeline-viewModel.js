@@ -9,7 +9,7 @@ define(
     'ojs/ojknockout', 'ojs/ojtable', 'ojs/ojgantt', 'ojs/ojlegend'],
   function (ko, componentStrings, Context, ArrayDataProvider, DateTimeConverter) {
 
-    function ExampleComponentModel(context) {
+    function BugTimelineComponentModel(context) {
       var currentModuleProductId = 2422;
       var self = this;
       const sysDate = new Date();
@@ -17,7 +17,7 @@ define(
       var red = '#ff3333';
       var orange = '#ffb833';
       var yellow = '#ffff00';
-      var green =  '#00b300';//'#33ff33';
+      var green = '#00b300';//'#33ff33';
       var grey = '#999999';
       var brown = '#cb3434';
       var firstSemiTerminal = true;
@@ -93,14 +93,14 @@ define(
       statusMap.set(93, 'T');
       statusMap.set(96, 'T');
       self.bugNo = ko.observable();
+      // static data for testing
       // self.testminUpdateDate = new Date("Apr 1, 2020").toISOString();
       // self.testmaxUpdateDate = new Date("Dec 31, 2020").toISOString();
-
-      var deptArray = [{
-        UpdDate: '2020-04-19T23:53:03.000Z', ProductId: 2421, Status: 11, StatusChanged: 'N', ProdChanged: 'N', StatusType: 'NT',
-        NextUpdDate: '2020-04-21T08:51:51.000Z', Colour: '#ff3333'
-      }];
-      self.testData = new ArrayDataProvider(deptArray)
+      // var deptArray = [{
+      //   UpdDate: '2020-04-19T23:53:03.000Z', ProductId: 2421, Status: 11, StatusChanged: 'N', ProdChanged: 'N', StatusType: 'NT',
+      //   NextUpdDate: '2020-04-21T08:51:51.000Z', Colour: '#ff3333'
+      // }];
+      // self.testData = new ArrayDataProvider(deptArray)
       self.dataprovider = ko.observable();
       self.tabId = 'tabid';
       self.ganttId = 'ganttid';
@@ -110,7 +110,7 @@ define(
       var maxTempUpdateDate = new Date();
       maxTempUpdateDate.setDate(maxTempUpdateDate.getDate() + 100);
       self.maxUpdateDate = ko.observable(maxTempUpdateDate.toISOString());
-      debugger;
+      //debugger;
       if (context.properties.bugNo) {
         self.bugNo(context.properties.bugNo);
         self.restApiURL = 'http://127.0.0.1:3000/api/BugClosedByUser/' + self.bugNo();
@@ -233,7 +233,7 @@ define(
               });
             }
           });
-        self.dataprovider = new ArrayDataProvider(self.data);
+        self.dataprovider(new ArrayDataProvider(self.data));
       }
 
       // Example for parsing context properties
@@ -246,20 +246,20 @@ define(
     };
 
     //Lifecycle methods - uncomment and implement if necessary 
-    //ExampleComponentModel.prototype.activated = function(context){
+    //BugTimelineComponentModel.prototype.activated = function(context){
     //};
 
-    //ExampleComponentModel.prototype.connected = function(context){
+    //BugTimelineComponentModel.prototype.connected = function(context){
     //};
 
-    //ExampleComponentModel.prototype.bindingsApplied = function(context){
+    //BugTimelineComponentModel.prototype.bindingsApplied = function(context){
     //};
 
-    //ExampleComponentModel.prototype.disconnect = function(context){
+    //BugTimelineComponentModel.prototype.disconnect = function(context){
     //};
 
-    //ExampleComponentModel.prototype.propertyChanged = function(context){
+    //BugTimelineComponentModel.prototype.propertyChanged = function(context){
     //};
 
-    return ExampleComponentModel;
+    return BugTimelineComponentModel;
   });
