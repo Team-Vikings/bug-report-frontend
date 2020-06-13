@@ -1,0 +1,15 @@
+{
+  "name": "bug-report",
+  "version": "1.0.0",
+  "description": "Bug Report web app created using OJet",
+  "dependencies": {
+    "@oracle/oraclejet": "~8.1.0"
+  },
+  "devDependencies": {
+    "@oracle/oraclejet-tooling": "~8.1.0"
+  },
+  "engines": {
+    "node": ">=0.10.0"
+  },
+  "private": true
+}
