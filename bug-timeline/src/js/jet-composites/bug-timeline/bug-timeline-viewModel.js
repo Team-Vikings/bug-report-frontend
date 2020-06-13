@@ -4,16 +4,16 @@
 */
 'use strict';
 define(
-  ['knockout', 'ojL10n!./resources/nls/bug-timeline-strings', 'ojs/ojcontext', 'ojs/ojarraydataprovider', 
-  'ojs/ojconverter-datetime',
-  'ojs/ojknockout', 'ojs/ojtable','ojs/ojgantt'],
-  function (ko, componentStrings, Context, ArrayDataProvider,DateTimeConverter) {
+  ['knockout', 'ojL10n!./resources/nls/bug-timeline-strings', 'ojs/ojcontext', 'ojs/ojarraydataprovider',
+    'ojs/ojconverter-datetime',
+    'ojs/ojknockout', 'ojs/ojtable', 'ojs/ojgantt', 'ojs/ojlegend'],
+  function (ko, componentStrings, Context, ArrayDataProvider, DateTimeConverter) {
 
     function ExampleComponentModel(context) {
       var currentModuleProductId = 2422;
       var self = this;
       const sysDate = new Date();
-      self.dateConverter = new DateTimeConverter.IntlDateTimeConverter({"formatType": "date", "dateFormat": "long"});
+      self.dateConverter = new DateTimeConverter.IntlDateTimeConverter({ "formatType": "date", "dateFormat": "long" });
       var red = '#ff3333';
       var orange = '#ffb833';
       var yellow = '#ffff00';
@@ -21,6 +21,13 @@ define(
       var grey = '#999999';
       var brown = '#cb3434';
       var firstSemiTerminal = true;
+      var colours = [{ desc: "Bug is in opened state", colour: red },
+      { desc: "Bug is in non-terminal state like 3x", colour: orange },
+      { desc: "Bug is in semi-terminal state like 7x", colour: yellow },
+      { desc: "Bug is in terminal state like 9x", colour: green },
+      { desc: "Bug is not with current module", colour: grey },
+      { desc: "Bug is in terminal state and with other module", colour: brown }];
+      this.legendDataProvider = new ArrayDataProvider(colours, { keyAttributes: 'desc' });
 
       function getColour(StatusType, ProductId) {
         if (StatusType == 'ST') {
@@ -89,13 +96,14 @@ define(
       // self.testminUpdateDate = new Date("Apr 1, 2020").toISOString();
       // self.testmaxUpdateDate = new Date("Dec 31, 2020").toISOString();
 
-       var deptArray = [{
-         UpdDate:'2020-04-19T23:53:03.000Z',ProductId:2421,Status:11,StatusChanged:'N',ProdChanged:'N',StatusType:'NT',
-         NextUpdDate:'2020-04-21T08:51:51.000Z',Colour:'#ff3333'}];
-       self.testData = new ArrayDataProvider(deptArray)
+      var deptArray = [{
+        UpdDate: '2020-04-19T23:53:03.000Z', ProductId: 2421, Status: 11, StatusChanged: 'N', ProdChanged: 'N', StatusType: 'NT',
+        NextUpdDate: '2020-04-21T08:51:51.000Z', Colour: '#ff3333'
+      }];
+      self.testData = new ArrayDataProvider(deptArray)
       self.dataprovider = ko.observable();
       self.tabId = 'tabid';
-      self.ganttId= 'ganttid';
+      self.ganttId = 'ganttid';
       var minTempUpdateDate = new Date();
       minTempUpdateDate.setDate(minTempUpdateDate.getDate() - 100);
       self.minUpdateDate = ko.observable(minTempUpdateDate.toISOString());
@@ -112,7 +120,7 @@ define(
           then(function (fetchData) {
             $.each(fetchData, function () {
               var productFlag;
-              switch(this.PROD_CHANGED){
+              switch (this.PROD_CHANGED) {
                 case "ETI":
                   productFlag = "Other module transferred bug";
                   break;
@@ -134,8 +142,8 @@ define(
                 StatusType: statusMap.get(this.NEW_STATUS)
               });
             });
-            self.minUpdateDate(new Date ( tempArray[0].UpdDate).toISOString());
-            var endDate = new Date (tempArray[tempArray.length - 1].UpdDate);
+            self.minUpdateDate(new Date(tempArray[0].UpdDate).toISOString());
+            var endDate = new Date(tempArray[tempArray.length - 1].UpdDate);
             endDate.setDate(endDate.getDate() + 7); //add 7 days
             self.maxUpdateDate((endDate < sysDate ? endDate : sysDate).toISOString());
             for (var i = 0; i < tempArray.length - 1; i++) {

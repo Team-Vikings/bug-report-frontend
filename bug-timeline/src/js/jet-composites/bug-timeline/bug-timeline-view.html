@@ -3,80 +3,52 @@
   The Universal Permissive License (UPL), Version 1.0
 -->
 <div class="oj-hybrid-padding">
-  <h1>Bug <oj-bind-text value="[[bugNo]]"></oj-bind-text> Timeline</h1>
-  <div>
-    <!-- <oj-label for="bugNo">Enter Bug No</oj-label>
+  <div class="oj-flex-item">
+    <h1>Bug <oj-bind-text value="[[bugNo]]"></oj-bind-text> Timeline</h1>
+  </div>
+  <div class="oj-flex-item">
+    <oj-legend valign="top" halign="end" orientation='vertical' data="[[legendDataProvider]]">
+      <template slot="itemTemplate">
+        <oj-legend-item text="[[$current.data.desc]]" marker-shape="square" color="[[$current.data.colour]]">
+        </oj-legend-item>
+      </template>
+    </oj-legend>
+  </div>
+</div>
+<div>
+  <!-- <oj-label for="bugNo">Enter Bug No</oj-label>
     <oj-input-text required value="{{bugNo}}" id="bugNo" 
       converter='{"type":"number", "options":{"pattern": "########"}}' validators="[[validators]]"></oj-input-text> -->
-
-    <oj-table :id='[[tabId]]' data='[[dataprovider]]' columns='[{"headerText": "Update Date", 
-                     "field": "UpdDate",
-                     "resizable": "enabled"},
-                    {"headerText": "Product Id", 
-                     "field": "ProductId",
-                     "headerClassName": "oj-sm-only-hide",
-                     "className": "oj-sm-only-hide",
-                     "resizable": "enabled"},
-                     {"headerText": "Status", 
-                     "field": "Status",
-                     "resizable": "enabled"},
-                     {"headerText": "Status Changed", 
-                     "field": "StatusChanged",
-                     "resizable": "enabled"},
-                     {"headerText": "Product Changed", 
-                     "field": "ProdChanged",
-                     "resizable": "enabled"},
-                     {"headerText": "Status Type", 
-                     "field": "StatusType",
-                     "resizable": "enabled"},
-                     {"headerText": "Next Update Date", 
-                     "field": "NextUpdDate",
-                     "resizable": "enabled"},
-                     {"headerText": "Colour", 
-                     "field": "Colour",
-                     "resizable": "enabled",
-                     "template": "colourCellTemplate"}
-                     ]'>
-      <template slot="colourCellTemplate" data-oj-as="cell">
-        <input type="text" :value = "[[cell.data]]" />
-          <svg width="20" height="20">
-            <rect width="20" height="20" :style.fill="[[cell.data]]"  style="stroke-width:3;stroke:rgb(0,0,0)" />
-            </svg>
+  <div id='gantt-container'>
+    <oj-gantt :id='[[ganttId]]' start="[[minUpdateDate]]" end="[[maxUpdateDate]]" selection-mode="single"
+      gridlines.horizontal="visible" gridlines.vertical="visible" major-axis.scale="weeks"
+      major-axis.zoom-order='["years","quarters", "months", "weeks", "days"]' minor-axis.scale=days
+      minor-axis.zoom-order='["years","quarters", "months", "weeks", "days"]' task-data="[[dataprovider]]">
+      <template slot="taskTemplate" data-oj-as="task">
+        <oj-gantt-task row-id="1" start="[[task.data.UpdDate]]" end="[[task.data.NextUpdDate]]"
+          svg-style='[[task.data.Colour ? {"fill": task.data.Colour} : {}]]'>
+        </oj-gantt-task>
       </template>
-    </oj-table>
-    
-    <div id='gantt-container'>
-      <oj-gantt :id='[[ganttId]]'
-          start="[[minUpdateDate]]"
-          end="[[maxUpdateDate]]"
-          selection-mode="single"
-          gridlines.horizontal="visible"
-          gridlines.vertical="visible"
-          major-axis.scale="weeks"
-          major-axis.zoom-order='["years","quarters", "months", "weeks", "days"]'
-          minor-axis.scale=days
-          minor-axis.zoom-order='["years","quarters", "months", "weeks", "days"]'
-          task-data="[[dataprovider]]">
-        <template slot="taskTemplate" data-oj-as="task">
-          <oj-gantt-task
-              row-id="1"
-              start="[[task.data.UpdDate]]"
-              end="[[task.data.NextUpdDate]]"
-              svg-style='[[task.data.Colour ? {"fill": task.data.Colour} : {}]]'>
-          </oj-gantt-task>
-        </template>
-        <template slot="tooltipTemplate" data-oj-as="tooltip">
-          <div>
-            <div style = "float:left; padding: 10px 8px 10px 3px">
-              <span><oj-bind-text value="[['Status: ' + tooltip.itemData.Status]]"></oj-bind-text></span><br/>
-              <span><oj-bind-text value="[[tooltip.itemData.ProdChanged]]"></oj-bind-text></span><br/>
-              <span><oj-bind-text value="[['Start Date: ' + dateConverter.format(tooltip.data.start)]]"></oj-bind-text></span><br/>
-              <span><oj-bind-text value="[['End Date: ' + dateConverter.format(tooltip.data.end)]]"></oj-bind-text></span>
-            </div>
+      <template slot="tooltipTemplate" data-oj-as="tooltip">
+        <div>
+          <div style="float:left; padding: 10px 8px 10px 3px">
+            <span>
+              <oj-bind-text value="[['Status: ' + tooltip.itemData.Status]]"></oj-bind-text>
+            </span><br />
+            <span>
+              <oj-bind-text value="[[tooltip.itemData.ProdChanged]]"></oj-bind-text>
+            </span><br />
+            <span>
+              <oj-bind-text value="[['Start Date: ' + dateConverter.format(tooltip.data.start)]]"></oj-bind-text>
+            </span><br />
+            <span>
+              <oj-bind-text value="[['End Date: ' + dateConverter.format(tooltip.data.end)]]"></oj-bind-text>
+            </span>
           </div>
-        </template>    
-      </oj-gantt>
-    </div>
-
+        </div>
+      </template>
+    </oj-gantt>
   </div>
+
+</div>
 </div>
