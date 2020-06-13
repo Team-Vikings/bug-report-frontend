@@ -43,6 +43,9 @@
           </span><br />
           <span>
             <oj-bind-text value="[['End Date: ' + dateConverter.format(tooltip.data.end)]]"></oj-bind-text>
+          </span><br/>
+          <span>
+            <oj-bind-text value="[['Duration in current state: ' + tooltip.itemData.Duration.toFixed(2)  + ' days']]"></oj-bind-text>
           </span>
         </div>
       </div>
