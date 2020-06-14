@@ -34,12 +34,17 @@
   "resizable": "enabled"}
   ]'>
   </oj-table>
+  <br/>
   <oj-button id="showBugtimeline" disabled="[[!rowSelected()]]" on-oj-action="[[showBugTimelineDialog]]">
     Show Bug Timeline</oj-button>
   <oj-bind-if test="[[rowSelected()]]">
-    <oj-dialog id="bugTimelineDialog" style="display:none" title="Selected Bug Timeline">
-        <div slot="body">
-            <oj-input-text readonly id="bugNo" value="[[selectedBugNo]]"></oj-input-text>
+    <oj-dialog id="bugTimelineDialog" style="display:none;width: 1000px; height: 500px;" title="Selected Bug Timeline"
+  
+     resize-behavior="resizable">
+        <div slot="body">            
+          <!-- <oj-input-text id ="BugNo" readonly value = "[[selectedBugNo]]"></oj-input-text> -->
+          <bug-timeline bug-no="[[selectedBugNo]]"></bug-timeline>
         </div>
     </oj-dialog>
+    </oj-bind-if>
 </div>

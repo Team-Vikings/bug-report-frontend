@@ -9,12 +9,13 @@
  */
 define(['accUtils', 'knockout', 'ojs/ojarraydataprovider',
 'ojs/ojconverter-datetime', 'ojs/ojvalidation-number', 'ojs/ojknockout', 'ojs/ojinputtext', 
-'ojs/ojlabel', 'ojs/ojinputnumber','ojs/ojtable','ojs/ojdialog'],
+'ojs/ojlabel', 'ojs/ojinputnumber','ojs/ojtable','ojs/ojdialog','bug-timeline/loader'],
   function (accUtils, ko, ArrayDataProvider, DateTimeConverter) {
 
     function DashboardViewModel() {
       var self = this;
       self.assignee = ko.observable();
+      self.data = ko.observableArray();
       self.dataprovider = ko.observable();
       self.days = ko.observable();
       self.rowSelected = ko.observable(false);
@@ -30,9 +31,10 @@ define(['accUtils', 'knockout', 'ojs/ojarraydataprovider',
 
       self.loadTable = function (event) {
         self.assignee(self.assignee().toUpperCase());
+        self.data([]);
+        self.dataprovider();
         if (self.assignee() != null && self.days() != null) {
           self.restApiURL = 'http://127.0.0.1:3000/api/BugClosedByUser/' + self.assignee() + '/' + self.days();
-          self.data = ko.observableArray();
           $.getJSON(self.restApiURL).
             then(function (fetchData) {
               $.each(fetchData, function () {
