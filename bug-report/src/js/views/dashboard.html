@@ -3,8 +3,43 @@
  The Universal Permissive License (UPL), Version 1.0
  -->
 <div class="oj-hybrid-padding">
-  <h1>Dashboard Content Area</h1>
-  <div>
-      To change the content of this section, you will make edits to the dashboard.html file located in the /js/views folder.
+  <h1>Bug closed by user in given days</h1>
+  <div class="oj-flex">
+    <div class="oj-flex-item">
+      <oj-label for="assignee" show-required="true">Assignee</oj-label>
+      <oj-input-text required value="{{assignee}}" id="assignee" validators="[[validators]]"
+        on-value-changed="[[loadTable]]"></oj-input-text>
+    </div>
+    <div class="oj-flex-item">
+      <oj-label for="days" show-required="true">Days</oj-label>
+      <oj-input-number required value="{{days}}" id="days" min="1" max="31" on-value-changed="[[loadTable]]">
+      </oj-input-number>
+    </div>
   </div>
+  <oj-table id='tabid' selection-mode.row="single" selection-mode.column = "single" selected="{{rowSelectedVal}}" 
+  on-selected-changed="[[rowSelectionChanged]]" data='[[dataprovider]]' columns='[{"headerText": "Bug No", 
+  "field": "BugNo",
+  "resizable": "enabled"},
+ {"headerText": "Status", 
+  "field": "Status",
+  "resizable": "enabled"},
+  {"headerText": "Customer", 
+  "field": "Customer",
+  "resizable": "enabled"},
+  {"headerText": "Subject", 
+  "field": "Subject",
+  "resizable": "enabled"},
+  {"headerText": "Close Date", 
+  "field": "CloseDate",
+  "resizable": "enabled"}
+  ]'>
+  </oj-table>
+  <oj-button id="showBugtimeline" disabled="[[!rowSelected()]]" on-oj-action="[[showBugTimelineDialog]]">
+    Show Bug Timeline</oj-button>
+  <oj-bind-if test="[[rowSelected()]]">
+    <oj-dialog id="bugTimelineDialog" style="display:none" title="Selected Bug Timeline">
+        <div slot="body">
+            <oj-input-text readonly id="bugNo" value="[[selectedBugNo]]"></oj-input-text>
+        </div>
+    </oj-dialog>
 </div>
