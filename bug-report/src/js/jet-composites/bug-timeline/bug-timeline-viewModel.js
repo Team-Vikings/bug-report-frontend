@@ -13,7 +13,7 @@ define(
       var currentModuleProductId = 2422;
       var self = this;
       const sysDate = new Date();
-      const convertUnit =  1000 * 3600 * 24;
+      const convertUnit = 1000 * 3600 * 24;
       self.dateConverter = new DateTimeConverter.IntlDateTimeConverter({ "formatType": "date", "dateFormat": "long" });
       var red = '#ff3333';
       var orange = '#ffb833';
@@ -104,7 +104,6 @@ define(
       // }];
       // self.testData = new ArrayDataProvider(deptArray)
       self.dataprovider = ko.observable();
-      self.tabId = 'tabid';
       self.ganttId = 'ganttid';
       var minTempUpdateDate = new Date();
       minTempUpdateDate.setDate(minTempUpdateDate.getDate() - 100);
@@ -112,11 +111,17 @@ define(
       var maxTempUpdateDate = new Date();
       maxTempUpdateDate.setDate(maxTempUpdateDate.getDate() + 100);
       self.maxUpdateDate = ko.observable(maxTempUpdateDate.toISOString());
-      //debugger;
-      self.loadGanttChart = function(bugNo){
-        debugger;
+      self.resetData = function () {
         self.data([]);
         self.dataprovider();
+        self.minUpdateDate(minTempUpdateDate.toISOString());
+        self.maxUpdateDate(maxTempUpdateDate.toISOString());
+        debugger;
+      }
+      //debugger;
+      self.loadGanttChart = function (bugNo) {
+        self.resetData();
+        debugger;
         self.bugNo(bugNo);
         self.restApiURL = 'http://127.0.0.1:3001/api/BugClosedByUser/' + self.bugNo();
         var tempArray = [];
@@ -168,7 +173,7 @@ define(
                   ProdChanged: curVal.ProdChanged,
                   StatusType: curVal.StatusType,
                   NextUpdDate: nextWeekDate.toISOString(),
-                  Duration: (nextWeekDate.getTime() - curUpdateDate.getTime())/ convertUnit,
+                  Duration: (nextWeekDate.getTime() - curUpdateDate.getTime()) / convertUnit,
                   Colour: getColour(curVal.StatusType, curVal.ProductId)
                 });
                 self.data.push({
@@ -179,7 +184,7 @@ define(
                   ProdChanged: curVal.ProdChanged,
                   StatusType: curVal.StatusType,
                   NextUpdDate: nextUpdDate.toISOString(),
-                  Duration: (nextUpdDate.getTime() - nextWeekDate.getTime())/ convertUnit,
+                  Duration: (nextUpdDate.getTime() - nextWeekDate.getTime()) / convertUnit,
                   Colour: getColour(curVal.StatusType, curVal.ProductId)
                 });
               }
@@ -192,7 +197,7 @@ define(
                   ProdChanged: curVal.ProdChanged,
                   StatusType: curVal.StatusType,
                   NextUpdDate: nextUpdDate.toISOString(),
-                  Duration: (nextUpdDate.getTime() - curUpdateDate.getTime())/ convertUnit,
+                  Duration: (nextUpdDate.getTime() - curUpdateDate.getTime()) / convertUnit,
                   Colour: getColour(curVal.StatusType, curVal.ProductId)
                 });
 
@@ -214,7 +219,7 @@ define(
                 ProdChanged: curVal.ProdChanged,
                 StatusType: curVal.StatusType,
                 NextUpdDate: finalDate.toISOString(),
-                Duration: (finalDate.getTime() - new Date(curVal.UpdDate).getTime())/ convertUnit,
+                Duration: (finalDate.getTime() - new Date(curVal.UpdDate).getTime()) / convertUnit,
                 Colour: getColour(curVal.StatusType, curVal.ProductId)
               });
               self.data.push({
@@ -225,7 +230,7 @@ define(
                 ProdChanged: curVal.ProdChanged,
                 StatusType: curVal.StatusType,
                 NextUpdDate: (finalDateST < sysDate ? finalDateST : sysDate).toISOString(),
-                Duration: ((finalDateST < sysDate ? finalDateST : sysDate).getTime() - finalDate.getTime())/ convertUnit,
+                Duration: ((finalDateST < sysDate ? finalDateST : sysDate).getTime() - finalDate.getTime()) / convertUnit,
                 Colour: getColour(curVal.StatusType, curVal.ProductId)
               });
             }
@@ -238,7 +243,7 @@ define(
                 ProdChanged: curVal.ProdChanged,
                 StatusType: curVal.StatusType,
                 NextUpdDate: (finalDate < sysDate ? finalDate : sysDate).toISOString(),
-                Duration: ((finalDate < sysDate ? finalDate : sysDate).getTime() - new Date(curVal.UpdDate).getTime())/ convertUnit,
+                Duration: ((finalDate < sysDate ? finalDate : sysDate).getTime() - new Date(curVal.UpdDate).getTime()) / convertUnit,
                 Colour: getColour(curVal.StatusType, curVal.ProductId)
               });
             }
@@ -248,7 +253,7 @@ define(
       if (self.properties.bugNo) {
         self.loadGanttChart(self.properties.bugNo);
       }
-      
+
       // Example for parsing context properties
       // if (context.properties.name) {
       //     parse the context properties here
@@ -271,7 +276,7 @@ define(
     //BugTimelineComponentModel.prototype.disconnect = function(context){
     //};
 
-    BugTimelineComponentModel.prototype.propertyChanged = function(context){
+    BugTimelineComponentModel.prototype.propertyChanged = function (context) {
       this.loadGanttChart(context.value);
     };
 

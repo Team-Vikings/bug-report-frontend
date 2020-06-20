@@ -16,10 +16,11 @@
       </oj-input-number>
     </div>
   </div>
-  <oj-table id='tabid' selection-mode.row="single" selection-mode.column = "single" selected="{{rowSelectedVal}}" 
-  on-selected-changed="[[rowSelectionChanged]]" data='[[dataprovider]]' columns='[{"headerText": "Bug No", 
+  <oj-table id='tabid' selection-mode.row="single" selection-mode.column="single" selected="{{rowSelectedVal}}"
+    on-selected-changed="[[rowSelectionChanged]]" data='[[dataprovider]]' columns='[{"headerText": "Bug No", 
   "field": "BugNo",
-  "resizable": "enabled"},
+  "resizable": "enabled",
+  "template": "bugNoTemplate" },
  {"headerText": "Status", 
   "field": "Status",
   "resizable": "enabled"},
@@ -33,18 +34,22 @@
   "field": "CloseDate",
   "resizable": "enabled"}
   ]'>
+    <template slot="bugNoTemplate" data-oj-as="BugNo">
+      <a :href="[[bugURI + BugNo.data]]" target="_blank">
+        <oj-bind-text value="[[BugNo.data]]"></oj-bind-text>
+      </a>
+    </template>
   </oj-table>
-  <br/>
+  <br />
   <oj-button id="showBugtimeline" disabled="[[!rowSelected()]]" on-oj-action="[[showBugTimelineDialog]]">
     Show Bug Timeline</oj-button>
   <oj-bind-if test="[[rowSelected()]]">
     <oj-dialog id="bugTimelineDialog" style="display:none;width: 1000px; height: 500px;" title="Selected Bug Timeline"
-  
-     resize-behavior="resizable">
-        <div slot="body">            
-          <!-- <oj-input-text id ="BugNo" readonly value = "[[selectedBugNo]]"></oj-input-text> -->
-          <bug-timeline bug-no="[[selectedBugNo]]"></bug-timeline>
-        </div>
+      resize-behavior="resizable">
+      <div slot="body">
+        <!-- <oj-input-text id ="BugNo" readonly value = "[[selectedBugNo]]"></oj-input-text> -->
+        <bug-timeline bug-no="[[selectedBugNo]]"></bug-timeline>
+      </div>
     </oj-dialog>
-    </oj-bind-if>
+  </oj-bind-if>
 </div>

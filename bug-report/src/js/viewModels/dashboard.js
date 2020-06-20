@@ -8,12 +8,13 @@
  * Your dashboard ViewModel code goes here
  */
 define(['accUtils', 'knockout', 'ojs/ojarraydataprovider',
-'ojs/ojconverter-datetime', 'ojs/ojvalidation-number', 'ojs/ojknockout', 'ojs/ojinputtext', 
-'ojs/ojlabel', 'ojs/ojinputnumber','ojs/ojtable','ojs/ojdialog','bug-timeline/loader'],
+  'ojs/ojconverter-datetime', 'ojs/ojvalidation-number', 'ojs/ojknockout', 'ojs/ojinputtext',
+  'ojs/ojlabel', 'ojs/ojinputnumber', 'ojs/ojtable', 'ojs/ojdialog', 'bug-timeline/loader'],
   function (accUtils, ko, ArrayDataProvider, DateTimeConverter) {
 
     function DashboardViewModel() {
       var self = this;
+      self.bugURI = 'https://bug.oraclecorp.com/pls/bug/webbug_edit.edit_info_top?rptno=';
       self.assignee = ko.observable();
       self.data = ko.observableArray();
       self.dataprovider = ko.observable();
@@ -48,22 +49,22 @@ define(['accUtils', 'knockout', 'ojs/ojarraydataprovider',
               }
               )
             });
-            self.dataprovider(new ArrayDataProvider(self.data, { keyAttributes: 'BugNo' }));
+          self.dataprovider(new ArrayDataProvider(self.data, { keyAttributes: 'BugNo' }));
         }
       }
-      
-      self.rowSelectionChanged = function(event){
+
+      self.rowSelectionChanged = function (event) {
         //get the bug no of the selected row
-        if (event.detail.value.row.values().size !== 0){
+        if (event.detail.value.row.values().size !== 0) {
           self.selectedBugNo(event.detail.value.row.values().keys().next().value);
           self.rowSelected(true);
         }
-        else{
+        else {
           self.rowSelected(false);
         }
       }
-      
-      self.showBugTimelineDialog = function(event){
+
+      self.showBugTimelineDialog = function (event) {
         document.getElementById('bugTimelineDialog').open();
       }
 
