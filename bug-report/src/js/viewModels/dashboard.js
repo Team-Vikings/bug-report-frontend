@@ -35,7 +35,8 @@ define(['accUtils', 'knockout', 'ojs/ojarraydataprovider',
         self.data([]);
         self.dataprovider();
         if (self.assignee() != null && self.days() != null) {
-          self.restApiURL = 'http://127.0.0.1:3000/api/BugClosedByUser/' + self.assignee() + '/' + self.days();
+          //self.restApiURL = 'http://127.0.0.1:3000/api/BugClosedByUser/' + self.assignee() + '/' + self.days();
+          self.restApiURL = 'http://den00qau.us.oracle.com:3000/api/BugClosedByUser/' + self.assignee() + '/' + self.days();
           $.getJSON(self.restApiURL).
             then(function (fetchData) {
               $.each(fetchData, function () {

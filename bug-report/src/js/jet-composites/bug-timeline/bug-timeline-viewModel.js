@@ -123,7 +123,8 @@ define(
         self.resetData();
         debugger;
         self.bugNo(bugNo);
-        self.restApiURL = 'http://127.0.0.1:3001/api/BugClosedByUser/' + self.bugNo();
+        //self.restApiURL = 'http://127.0.0.1:3001/api/BugClosedByUser/' + self.bugNo();
+        self.restApiURL = 'http://den00qau.us.oracle.com:3000/api/BugTimeline/' + self.bugNo();
         var tempArray = [];
         $.getJSON(self.restApiURL).
           then(function (fetchData) {
