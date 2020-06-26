@@ -23,7 +23,8 @@
   <oj-gantt :id='[[ganttId]]' start="[[minUpdateDate]]" end="[[maxUpdateDate]]" selection-mode="single"
     gridlines.horizontal="visible" gridlines.vertical="visible" major-axis.scale="weeks"
     major-axis.zoom-order='["years","quarters", "months", "weeks", "days"]' minor-axis.scale=days
-    minor-axis.zoom-order='["years","quarters", "months", "weeks", "days"]' task-data="[[dataprovider]]">
+    minor-axis.zoom-order='["years","quarters", "months", "weeks", "days"]' task-data="[[dataprovider]]"
+    viewport-start="[[vpStart]]" viewport-end="[[vpEnd]]">
     <template slot="taskTemplate" data-oj-as="task">
       <oj-gantt-task row-id="1" start="[[task.data.UpdDate]]" end="[[task.data.NextUpdDate]]"
         svg-style='[[task.data.Colour ? {"fill": task.data.Colour} : {}]]'>
@@ -43,10 +44,17 @@
           </span><br />
           <span>
             <oj-bind-text value="[['End Date: ' + dateConverter.format(tooltip.data.end)]]"></oj-bind-text>
-          </span><br/>
+          </span><br />
           <span>
-            <oj-bind-text value="[['Duration in current state: ' + tooltip.itemData.Duration.toFixed(2)  + ' days']]"></oj-bind-text>
-          </span>
+            <oj-bind-text value="[['Duration in current state: ' + tooltip.itemData.Duration.toFixed(2)  + ' days']]">
+            </oj-bind-text>
+          </span><br/>
+          <oj-bind-if test="[[tooltip.itemData.updBy != null]]">
+            <span>
+              <oj-bind-text value="[['Bug moved by ' + tooltip.itemData.updBy]]">
+              </oj-bind-text>
+            </span>
+          </oj-bind-if>
         </div>
       </div>
     </template>

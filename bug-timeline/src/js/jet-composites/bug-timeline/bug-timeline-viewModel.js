@@ -13,7 +13,7 @@ define(
       var currentModuleProductId = 2422;
       var self = this;
       const sysDate = new Date();
-      const convertUnit =  1000 * 3600 * 24;
+      const convertUnit = 1000 * 3600 * 24;
       self.dateConverter = new DateTimeConverter.IntlDateTimeConverter({ "formatType": "date", "dateFormat": "long" });
       var red = '#ff3333';
       var orange = '#ffb833';
@@ -28,7 +28,9 @@ define(
       { desc: "Bug is in terminal state like 9x", colour: green },
       { desc: "Bug is not with current module", colour: grey },
       { desc: "Bug is in terminal state and with other module", colour: brown }];
-      this.legendDataProvider = new ArrayDataProvider(colours, { keyAttributes: 'desc' });
+      self.legendDataProvider = new ArrayDataProvider(colours, { keyAttributes: 'desc' });
+      self.vpStart = ko.observable("");
+      self.vpEnd = ko.observable("");
 
       function getColour(StatusType, ProductId) {
         if (StatusType == 'ST') {
@@ -104,7 +106,6 @@ define(
       // }];
       // self.testData = new ArrayDataProvider(deptArray)
       self.dataprovider = ko.observable();
-      self.tabId = 'tabid';
       self.ganttId = 'ganttid';
       var minTempUpdateDate = new Date();
       minTempUpdateDate.setDate(minTempUpdateDate.getDate() - 100);
@@ -112,30 +113,42 @@ define(
       var maxTempUpdateDate = new Date();
       maxTempUpdateDate.setDate(maxTempUpdateDate.getDate() + 100);
       self.maxUpdateDate = ko.observable(maxTempUpdateDate.toISOString());
-      //debugger;
-      self.loadGanttChart = function(bugNo){
-        debugger;
+      self.resetData = function () {
         self.data([]);
-        self.dataprovider();
+        self.dataprovider(new ArrayDataProvider(self.data));
+        self.minUpdateDate(minTempUpdateDate.toISOString());
+        self.maxUpdateDate(maxTempUpdateDate.toISOString());
+        self.vpStart.valueHasMutated();
+        self.vpEnd.valueHasMutated();
+      }
+      //debugger;
+      self.loadGanttChart = function (bugNo) {
+        self.resetData();
+        debugger;
         self.bugNo(bugNo);
-        self.restApiURL = 'http://127.0.0.1:3001/api/BugClosedByUser/' + self.bugNo();
+        //self.restApiURL = 'http://127.0.0.1:3001/api/BugClosedByUser/' + self.bugNo();
+        self.restApiURL = 'http://den00qau.us.oracle.com:3000/api/BugTimeline/' + self.bugNo();
         var tempArray = [];
         $.getJSON(self.restApiURL).
           then(function (fetchData) {
             $.each(fetchData, function () {
-              var productFlag;
+              var productFlag, updBy;
               switch (this.PROD_CHANGED) {
                 case "ETI":
                   productFlag = "Other module transferred bug";
+                  updBy = this.UPDATED_BY;
                   break;
                 case "ETO":
                   productFlag = "Bug transferred to other module";
+                  updBy = this.UPDATED_BY;
                   break;
                 case "ETR":
                   productFlag = "Other module transferred bug back";
+                  updBy = this.UPDATED_BY;
                   break;
                 default:
                   productFlag = null;
+                  updBy = null;
               }
               tempArray.push({
                 UpdDate: this.UPD_DATE,
@@ -143,7 +156,8 @@ define(
                 Status: this.NEW_STATUS,
                 StatusChanged: this.STATUS_CHANGED,
                 ProdChanged: productFlag,
-                StatusType: statusMap.get(this.NEW_STATUS)
+                StatusType: statusMap.get(this.NEW_STATUS),
+                updBy: updBy
               });
             });
             self.minUpdateDate(new Date(tempArray[0].UpdDate).toISOString());
@@ -168,8 +182,9 @@ define(
                   ProdChanged: curVal.ProdChanged,
                   StatusType: curVal.StatusType,
                   NextUpdDate: nextWeekDate.toISOString(),
-                  Duration: (nextWeekDate.getTime() - curUpdateDate.getTime())/ convertUnit,
-                  Colour: getColour(curVal.StatusType, curVal.ProductId)
+                  Duration: (nextWeekDate.getTime() - curUpdateDate.getTime()) / convertUnit,
+                  Colour: getColour(curVal.StatusType, curVal.ProductId),
+                  updBy: curVal.updBy
                 });
                 self.data.push({
                   UpdDate: nextWeekDate.toISOString(),
@@ -179,8 +194,9 @@ define(
                   ProdChanged: curVal.ProdChanged,
                   StatusType: curVal.StatusType,
                   NextUpdDate: nextUpdDate.toISOString(),
-                  Duration: (nextUpdDate.getTime() - nextWeekDate.getTime())/ convertUnit,
-                  Colour: getColour(curVal.StatusType, curVal.ProductId)
+                  Duration: (nextUpdDate.getTime() - nextWeekDate.getTime()) / convertUnit,
+                  Colour: getColour(curVal.StatusType, curVal.ProductId),
+                  updBy: curVal.updBy
                 });
               }
               else {
@@ -192,8 +208,9 @@ define(
                   ProdChanged: curVal.ProdChanged,
                   StatusType: curVal.StatusType,
                   NextUpdDate: nextUpdDate.toISOString(),
-                  Duration: (nextUpdDate.getTime() - curUpdateDate.getTime())/ convertUnit,
-                  Colour: getColour(curVal.StatusType, curVal.ProductId)
+                  Duration: (nextUpdDate.getTime() - curUpdateDate.getTime()) / convertUnit,
+                  Colour: getColour(curVal.StatusType, curVal.ProductId),
+                  updBy: curVal.updBy
                 });
 
               }
@@ -214,8 +231,9 @@ define(
                 ProdChanged: curVal.ProdChanged,
                 StatusType: curVal.StatusType,
                 NextUpdDate: finalDate.toISOString(),
-                Duration: (finalDate.getTime() - new Date(curVal.UpdDate).getTime())/ convertUnit,
-                Colour: getColour(curVal.StatusType, curVal.ProductId)
+                Duration: (finalDate.getTime() - new Date(curVal.UpdDate).getTime()) / convertUnit,
+                Colour: getColour(curVal.StatusType, curVal.ProductId),
+                updBy: curVal.updBy
               });
               self.data.push({
                 UpdDate: finalDate.toISOString(),
@@ -225,8 +243,9 @@ define(
                 ProdChanged: curVal.ProdChanged,
                 StatusType: curVal.StatusType,
                 NextUpdDate: (finalDateST < sysDate ? finalDateST : sysDate).toISOString(),
-                Duration: ((finalDateST < sysDate ? finalDateST : sysDate).getTime() - finalDate.getTime())/ convertUnit,
-                Colour: getColour(curVal.StatusType, curVal.ProductId)
+                Duration: ((finalDateST < sysDate ? finalDateST : sysDate).getTime() - finalDate.getTime()) / convertUnit,
+                Colour: getColour(curVal.StatusType, curVal.ProductId),
+                updBy: curVal.updBy
               });
             }
             else {
@@ -238,8 +257,9 @@ define(
                 ProdChanged: curVal.ProdChanged,
                 StatusType: curVal.StatusType,
                 NextUpdDate: (finalDate < sysDate ? finalDate : sysDate).toISOString(),
-                Duration: ((finalDate < sysDate ? finalDate : sysDate).getTime() - new Date(curVal.UpdDate).getTime())/ convertUnit,
-                Colour: getColour(curVal.StatusType, curVal.ProductId)
+                Duration: ((finalDate < sysDate ? finalDate : sysDate).getTime() - new Date(curVal.UpdDate).getTime()) / convertUnit,
+                Colour: getColour(curVal.StatusType, curVal.ProductId),
+                updBy: curVal.updBy
               });
             }
           });
@@ -248,7 +268,7 @@ define(
       if (self.properties.bugNo) {
         self.loadGanttChart(self.properties.bugNo);
       }
-      
+
       // Example for parsing context properties
       // if (context.properties.name) {
       //     parse the context properties here
@@ -271,7 +291,7 @@ define(
     //BugTimelineComponentModel.prototype.disconnect = function(context){
     //};
 
-    BugTimelineComponentModel.prototype.propertyChanged = function(context){
+    BugTimelineComponentModel.prototype.propertyChanged = function (context) {
       this.loadGanttChart(context.value);
     };
 

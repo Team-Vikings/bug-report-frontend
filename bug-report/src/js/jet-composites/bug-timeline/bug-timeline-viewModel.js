@@ -28,7 +28,9 @@ define(
       { desc: "Bug is in terminal state like 9x", colour: green },
       { desc: "Bug is not with current module", colour: grey },
       { desc: "Bug is in terminal state and with other module", colour: brown }];
-      this.legendDataProvider = new ArrayDataProvider(colours, { keyAttributes: 'desc' });
+      self.legendDataProvider = new ArrayDataProvider(colours, { keyAttributes: 'desc' });
+      self.vpStart = ko.observable("");
+      self.vpEnd = ko.observable("");
 
       function getColour(StatusType, ProductId) {
         if (StatusType == 'ST') {
@@ -113,10 +115,11 @@ define(
       self.maxUpdateDate = ko.observable(maxTempUpdateDate.toISOString());
       self.resetData = function () {
         self.data([]);
-        self.dataprovider();
+        self.dataprovider(new ArrayDataProvider(self.data));
         self.minUpdateDate(minTempUpdateDate.toISOString());
         self.maxUpdateDate(maxTempUpdateDate.toISOString());
-        debugger;
+        self.vpStart.valueHasMutated();
+        self.vpEnd.valueHasMutated();
       }
       //debugger;
       self.loadGanttChart = function (bugNo) {
@@ -129,19 +132,23 @@ define(
         $.getJSON(self.restApiURL).
           then(function (fetchData) {
             $.each(fetchData, function () {
-              var productFlag;
+              var productFlag, updBy;
               switch (this.PROD_CHANGED) {
                 case "ETI":
                   productFlag = "Other module transferred bug";
+                  updBy = this.UPDATED_BY;
                   break;
                 case "ETO":
                   productFlag = "Bug transferred to other module";
+                  updBy = this.UPDATED_BY;
                   break;
                 case "ETR":
                   productFlag = "Other module transferred bug back";
+                  updBy = this.UPDATED_BY;
                   break;
                 default:
                   productFlag = null;
+                  updBy = null;
               }
               tempArray.push({
                 UpdDate: this.UPD_DATE,
@@ -149,7 +156,8 @@ define(
                 Status: this.NEW_STATUS,
                 StatusChanged: this.STATUS_CHANGED,
                 ProdChanged: productFlag,
-                StatusType: statusMap.get(this.NEW_STATUS)
+                StatusType: statusMap.get(this.NEW_STATUS),
+                updBy: updBy
               });
             });
             self.minUpdateDate(new Date(tempArray[0].UpdDate).toISOString());
@@ -175,7 +183,8 @@ define(
                   StatusType: curVal.StatusType,
                   NextUpdDate: nextWeekDate.toISOString(),
                   Duration: (nextWeekDate.getTime() - curUpdateDate.getTime()) / convertUnit,
-                  Colour: getColour(curVal.StatusType, curVal.ProductId)
+                  Colour: getColour(curVal.StatusType, curVal.ProductId),
+                  updBy: curVal.updBy
                 });
                 self.data.push({
                   UpdDate: nextWeekDate.toISOString(),
@@ -186,7 +195,8 @@ define(
                   StatusType: curVal.StatusType,
                   NextUpdDate: nextUpdDate.toISOString(),
                   Duration: (nextUpdDate.getTime() - nextWeekDate.getTime()) / convertUnit,
-                  Colour: getColour(curVal.StatusType, curVal.ProductId)
+                  Colour: getColour(curVal.StatusType, curVal.ProductId),
+                  updBy: curVal.updBy
                 });
               }
               else {
@@ -199,7 +209,8 @@ define(
                   StatusType: curVal.StatusType,
                   NextUpdDate: nextUpdDate.toISOString(),
                   Duration: (nextUpdDate.getTime() - curUpdateDate.getTime()) / convertUnit,
-                  Colour: getColour(curVal.StatusType, curVal.ProductId)
+                  Colour: getColour(curVal.StatusType, curVal.ProductId),
+                  updBy: curVal.updBy
                 });
 
               }
@@ -221,7 +232,8 @@ define(
                 StatusType: curVal.StatusType,
                 NextUpdDate: finalDate.toISOString(),
                 Duration: (finalDate.getTime() - new Date(curVal.UpdDate).getTime()) / convertUnit,
-                Colour: getColour(curVal.StatusType, curVal.ProductId)
+                Colour: getColour(curVal.StatusType, curVal.ProductId),
+                updBy: curVal.updBy
               });
               self.data.push({
                 UpdDate: finalDate.toISOString(),
@@ -232,7 +244,8 @@ define(
                 StatusType: curVal.StatusType,
                 NextUpdDate: (finalDateST < sysDate ? finalDateST : sysDate).toISOString(),
                 Duration: ((finalDateST < sysDate ? finalDateST : sysDate).getTime() - finalDate.getTime()) / convertUnit,
-                Colour: getColour(curVal.StatusType, curVal.ProductId)
+                Colour: getColour(curVal.StatusType, curVal.ProductId),
+                updBy: curVal.updBy
               });
             }
             else {
@@ -245,7 +258,8 @@ define(
                 StatusType: curVal.StatusType,
                 NextUpdDate: (finalDate < sysDate ? finalDate : sysDate).toISOString(),
                 Duration: ((finalDate < sysDate ? finalDate : sysDate).getTime() - new Date(curVal.UpdDate).getTime()) / convertUnit,
-                Colour: getColour(curVal.StatusType, curVal.ProductId)
+                Colour: getColour(curVal.StatusType, curVal.ProductId),
+                updBy: curVal.updBy
               });
             }
           });

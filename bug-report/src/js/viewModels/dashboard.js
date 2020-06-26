@@ -33,7 +33,7 @@ define(['accUtils', 'knockout', 'ojs/ojarraydataprovider',
       self.loadTable = function (event) {
         self.assignee(self.assignee().toUpperCase());
         self.data([]);
-        self.dataprovider();
+        self.dataprovider(new ArrayDataProvider(self.data));
         if (self.assignee() != null && self.days() != null) {
           //self.restApiURL = 'http://127.0.0.1:3000/api/BugClosedByUser/' + self.assignee() + '/' + self.days();
           self.restApiURL = 'http://den00qau.us.oracle.com:3000/api/BugClosedByUser/' + self.assignee() + '/' + self.days();
