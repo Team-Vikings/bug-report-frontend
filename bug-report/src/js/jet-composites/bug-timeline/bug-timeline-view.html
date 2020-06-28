@@ -36,9 +36,11 @@
           <span>
             <oj-bind-text value="[['Status: ' + tooltip.itemData.Status]]"></oj-bind-text>
           </span><br />
-          <span>
-            <oj-bind-text value="[[tooltip.itemData.ProdChanged]]"></oj-bind-text>
-          </span><br />
+          <oj-bind-if test="[[tooltip.itemData.ProdChanged != null]]">
+            <span>
+              <oj-bind-text value="[[tooltip.itemData.ProdChanged]]"></oj-bind-text>
+            </span><br />
+          </oj-bind-if>
           <span>
             <oj-bind-text value="[['Start Date: ' + dateConverter.format(tooltip.data.start)]]"></oj-bind-text>
           </span><br />
@@ -48,7 +50,7 @@
           <span>
             <oj-bind-text value="[['Duration in current state: ' + tooltip.itemData.Duration.toFixed(2)  + ' days']]">
             </oj-bind-text>
-          </span><br/>
+          </span><br />
           <oj-bind-if test="[[tooltip.itemData.updBy != null]]">
             <span>
               <oj-bind-text value="[['Bug moved by ' + tooltip.itemData.updBy]]">
