@@ -16,3 +16,5 @@ hybrid/plugins/*
 
 .DS_Store
 Thumbs.db
+
+bug-report.war
